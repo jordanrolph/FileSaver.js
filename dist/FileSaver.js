@@ -14,14 +14,14 @@
   "use strict";
 
   /*
-  * FileSaver.js
-  * A saveAs() FileSaver implementation.
-  *
-  * By Eli Grey, http://eligrey.com
-  *
-  * License : https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md (MIT)
-  * source  : http://purl.eligrey.com/github/FileSaver.js
-  */
+   * FileSaver.js
+   * A saveAs() FileSaver implementation.
+   *
+   * By Eli Grey, http://eligrey.com
+   *
+   * License : https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md (MIT)
+   * source  : http://purl.eligrey.com/github/FileSaver.js
+   */
   // The one and only way of getting global scope in all environments
   // https://stackoverflow.com/q/3277182/1008999
   var _global = typeof window === 'object' && window.window === window ? window : typeof self === 'object' && self.self === self ? self : typeof global === 'object' && global.global === global ? global : void 0;
@@ -30,7 +30,7 @@
     if (typeof opts === 'undefined') opts = {
       autoBom: false
     };else if (typeof opts !== 'object') {
-      console.warn('Depricated: Expected third argument to be a object');
+      console.warn('Deprecated: Expected third argument to be a object');
       opts = {
         autoBom: !opts
       };
@@ -38,7 +38,7 @@
     // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
 
     if (opts.autoBom && /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
-      return new Blob([String.fromCharCode(0xFEFF), blob], {
+      return new Blob([String.fromCharCode(0xfeff), blob], {
         type: blob.type
       });
     }
@@ -82,10 +82,10 @@
   }
 
   var saveAs = _global.saveAs || ( // probably in some web worker
-  typeof window !== 'object' || window !== _global ? function saveAs() {}
-  /* noop */
-  // Use download attribute first if possible (#193 Lumia mobile)
-  : 'download' in HTMLAnchorElement.prototype ? function saveAs(blob, name, opts) {
+  typeof window !== 'object' || window !== _global ? function saveAs() {
+    /* noop */
+  } : // Use download attribute first if possible (#193 Lumia mobile)
+  'download' in HTMLAnchorElement.prototype ? function saveAs(blob, name, opts) {
     var URL = _global.URL || _global.webkitURL;
     var a = document.createElement('a');
     name = name || blob.name || 'download';
@@ -93,6 +93,9 @@
     a.rel = 'noopener'; // tabnabbing
     // TODO: detect chrome extensions & packaged apps
     // a.target = '_blank'
+    // Fix for the safari pinned tab bug
+
+    a.target = '_self';
 
     if (typeof blob === 'string') {
       // Support regular links
@@ -108,14 +111,14 @@
       a.href = URL.createObjectURL(blob);
       setTimeout(function () {
         URL.revokeObjectURL(a.href);
-      }, 4E4); // 40s
+      }, 4e4); // 40s
 
       setTimeout(function () {
         click(a);
       }, 0);
     }
-  } // Use msSaveOrOpenBlob as a second approach
-  : 'msSaveOrOpenBlob' in navigator ? function saveAs(blob, name, opts) {
+  } : // Use msSaveOrOpenBlob as a second approach
+  'msSaveOrOpenBlob' in navigator ? function saveAs(blob, name, opts) {
     name = name || blob.name || 'download';
 
     if (typeof blob === 'string') {
@@ -132,10 +135,10 @@
     } else {
       navigator.msSaveOrOpenBlob(bom(blob, opts), name);
     }
-  } // Fallback to using FileReader and a popup
-  : function saveAs(blob, name, opts, popup) {
+  } : // Fallback to using FileReader and a popup
+  function saveAs(blob, name, opts, popup) {
     // Open a popup immediately do go around popup blocker
-    // Mostly only avalible on user interaction and the fileReader is async so...
+    // Mostly only available on user interaction and the fileReader is async so...
     popup = popup || open('', '_blank');
 
     if (popup) {
@@ -150,7 +153,7 @@
     var isChromeIOS = /CriOS\/[\d]+/.test(navigator.userAgent);
 
     if ((isChromeIOS || force && isSafari) && typeof FileReader === 'object') {
-      // Safari doesn't allow downloading of blob urls
+      // Safari doesn't allow downloading of blob URLs
       var reader = new FileReader();
 
       reader.onloadend = function () {
@@ -169,7 +172,7 @@
 
       setTimeout(function () {
         URL.revokeObjectURL(url);
-      }, 4E4); // 40s
+      }, 4e4); // 40s
     }
   });
   _global.saveAs = saveAs.saveAs = saveAs;
